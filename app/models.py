@@ -101,3 +101,12 @@ class PolicemanSchema(ma.SQLAlchemySchema):
     job = fields.Nested(JobSchema)
     hire_date = auto_field()
     birthday = auto_field()
+
+class CarAccountingSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = CarAccounting
+        load_instance = True
+
+    id = auto_field()
+    car = fields.Nested(AutoParkSchema)
+    policeman = fields.Nested(PolicemanSchema)

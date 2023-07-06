@@ -35,7 +35,7 @@ def post_policeman():
 
 @app.route('/policeman/<id>', methods = ['GET'])
 def get_cur_policeman(id):
-    job_schema = PolicemanSchema(many = False)
+    policeman_schema = PolicemanSchema(many = False)
 
     req = Policeman.query.filter_by(id = id).first()
 
