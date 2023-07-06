@@ -123,3 +123,16 @@ class ArmorySchema(ma.SQLAlchemySchema):
     full_name = auto_field()
 
     policeman = fields.Nested(PolicemanSchema)
+
+class TraineeSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Trainee
+        load_instance = True
+
+    id = auto_field()
+    name = auto_field()
+    sername = auto_field()
+    lastname = auto_field()
+    birthday = auto_field()
+
+    curator = fields.Nested(PolicemanSchema)
