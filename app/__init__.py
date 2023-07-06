@@ -22,4 +22,5 @@ def after_request(response):
 
 
 from app import models
+from app.routes import autopark
 

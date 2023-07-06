@@ -70,3 +70,12 @@ class Detention(db.Model):
     policeman = db.relationship("Policeman", backref="detention")
     article = db.Column(db.String(), nullable=False)
     date = db.Column(db.DateTime,  nullable=False) #ДАТА
+
+class AutoParkSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = AutoPark
+        load_instance = True
+
+    id =auto_field()
+    mark = auto_field()
+    model = auto_field()
