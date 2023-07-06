@@ -1,4 +1,4 @@
-from app import app, db, spec
+from app import app, db
 from flask import jsonify, request
 from app.models import AutoPark, AutoParkSchema
 
@@ -12,7 +12,7 @@ def get_autopark():
     return jsonify(output)
 
 @app.route('/autopark', methods = ['POST'])
-def get_autopark():
+def post_autopark():
     data = request.get_json()
     mark = data['mark']
     model = data['model']
@@ -34,7 +34,7 @@ def get_cur_car(id):
 
 
 @app.route('/autopark/<id>', methods = ['POST'])
-def get_cur_car(id):
+def edit_cur_car(id):
     data = request.get_json()
     mark = data['mark']
     model = data['model']
@@ -49,10 +49,10 @@ def get_cur_car(id):
     return {"message": "Success"}
 
 @app.route('/autopark/<id>', methods = ['DELETE'])
-def get_cur_car(id):
+def delete_cur_car(id):
     car = AutoPark.query.filter_by(id = id).first()
-    
-    db.session.delete()
+
+    db.session.delete(car)
     db.session.commit()
     
     return {"message": "Success"}

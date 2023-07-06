@@ -51,7 +51,7 @@ class CarAccounting(db.Model):
     car_id = db.Column(db.Integer, db.ForeignKey('auto_park.id'), nullable=False)
     car = db.relationship("AutoPark", backref="account")
     policeman_id = db.Column(db.Integer, db.ForeignKey('policeman.id'), nullable=False)
-    policeman = db.relationship("Policeman", backref="trainee")
+    policeman = db.relationship("Policeman", backref="account")
 
 
 class Criminal(db.Model):
