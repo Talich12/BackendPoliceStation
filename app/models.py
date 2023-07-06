@@ -79,3 +79,11 @@ class AutoParkSchema(ma.SQLAlchemySchema):
     id =auto_field()
     mark = auto_field()
     model = auto_field()
+
+class JobSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Job
+        load_instance = True
+
+    id =auto_field()
+    name = auto_field()

@@ -39,7 +39,6 @@ def edit_cur_car(id):
     mark = data['mark']
     model = data['model']
 
-    autopark_schema = AutoParkSchema(many = False)
 
     car = AutoPark.query.filter_by(id = id).first()
     car.mark = mark
