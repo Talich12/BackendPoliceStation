@@ -22,5 +22,5 @@ def after_request(response):
 
 
 from app import models
-from app.routes import autopark, job, policeman, car_accounting, armory, trainee
+from app.routes import autopark, job, policeman, car_accounting, armory, trainee, criminal
 

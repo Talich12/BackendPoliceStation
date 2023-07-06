@@ -136,3 +136,15 @@ class TraineeSchema(ma.SQLAlchemySchema):
     birthday = auto_field()
 
     curator = fields.Nested(PolicemanSchema)
+
+class CriminalSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Criminal
+        load_instance = True
+
+    id = auto_field()
+    name = auto_field()
+    sername = auto_field()
+    lastname = auto_field()
+    birthday = auto_field()
+    status = auto_field()
