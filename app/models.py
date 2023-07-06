@@ -7,6 +7,7 @@ from hashlib import md5
 import base64
 from datetime import datetime, timedelta
 import os
+
   
 
 class AutoPark(db.Model):
@@ -34,15 +35,15 @@ class Policeman(db.Model):
     lastname = db.Column(db.String(), nullable=False)
     job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=False)
     job = db.relationship("Job", backref="policeman")
-    hire_date = db.Column(db.DateTime(), nullable=False) #ДАТА
-    birthday = db.Column(db.DateTime(), nullable=False) #ДАТА
+    hire_date = db.Column(db.Date(), nullable=False) #ДАТА
+    birthday = db.Column(db.Date(), nullable=False) #ДАТА
 
 class Trainee(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(), nullable=False)
     sername = db.Column(db.String(), nullable=False)
     lastname = db.Column(db.String(), nullable=False)
-    birthday = db.Column(db.DateTime(), nullable=False) # ДАТА
+    birthday = db.Column(db.Date(), nullable=False) # ДАТА
     curator_id = db.Column(db.Integer, db.ForeignKey('policeman.id'), nullable=False)
     curator = db.relationship("Policeman", backref="trainee")
 
@@ -59,7 +60,7 @@ class Criminal(db.Model):
     name = db.Column(db.String(), nullable=False)
     sername = db.Column(db.String(), nullable=False)
     lastname = db.Column(db.String(), nullable=False)
-    birthday = db.Column(db.DateTime(), nullable=False) #ДАТА
+    birthday = db.Column(db.Date(), nullable=False) #ДАТА
     status = db.Column(db.String(), nullable=False)
 
 class Detention(db.Model):
@@ -69,7 +70,7 @@ class Detention(db.Model):
     policeman_id = db.Column(db.Integer, db.ForeignKey('policeman.id'), nullable=False)
     policeman = db.relationship("Policeman", backref="detention")
     article = db.Column(db.String(), nullable=False)
-    date = db.Column(db.DateTime,  nullable=False) #ДАТА
+    date = db.Column(db.Date,  nullable=False) #ДАТА
 
 class AutoParkSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -87,3 +88,16 @@ class JobSchema(ma.SQLAlchemySchema):
 
     id =auto_field()
     name = auto_field()
+
+class PolicemanSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Policeman
+        load_instance = True
+
+    id = auto_field()
+    name = auto_field()
+    sername = auto_field()
+    lastname = auto_field()
+    job = fields.Nested(JobSchema)
+    hire_date = auto_field()
+    birthday = auto_field()
