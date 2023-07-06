@@ -39,7 +39,7 @@ def get_cur_policeman(id):
 
     req = Policeman.query.filter_by(id = id).first()
 
-    output = job_schema.dump(req)
+    output = policeman_schema.dump(req)
     return jsonify(output)
 
 

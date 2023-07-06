@@ -110,3 +110,16 @@ class CarAccountingSchema(ma.SQLAlchemySchema):
     id = auto_field()
     car = fields.Nested(AutoParkSchema)
     policeman = fields.Nested(PolicemanSchema)
+
+
+class ArmorySchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Armory
+        load_instance = True
+
+    id = auto_field()
+    weapon_type = auto_field()
+    code = auto_field()
+    full_name = auto_field()
+
+    policeman = fields.Nested(PolicemanSchema)
