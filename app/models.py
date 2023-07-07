@@ -99,9 +99,12 @@ class AllPolicemanSchema(ma.SQLAlchemySchema):
     name = auto_field()
     sername = auto_field()
     lastname = auto_field()
-    job = fields.String()
+    job_name = fields.Method("get_job_name")
     hire_date = auto_field()
     birthday = auto_field()
+
+    def get_job_name(self, obj):
+        return obj.job.name if obj.job else ''
 
 class PolicemanSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -126,6 +129,30 @@ class CarAccountingSchema(ma.SQLAlchemySchema):
     policeman = fields.Nested(PolicemanSchema)
 
 
+class AllArmorySchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Armory
+        load_instance = True
+
+    id = auto_field()
+    weapon_type = auto_field()
+    code = auto_field()
+    full_name = auto_field()
+
+    policeman_fullname = fields.Method('get_policeman_fullname')
+
+    def get_policeman_fullname(self, obj):
+        if obj.policeman:
+            lastname = str(obj.policeman.lastname)
+            name = str(obj.policeman.name)
+            sername = str(obj.policeman.sername)
+
+            output = f"{lastname} {name[0]}. {sername[0]}."
+
+        else:
+            output = ""
+        return output
+    
 class ArmorySchema(ma.SQLAlchemySchema):
     class Meta:
         model = Armory
@@ -137,6 +164,32 @@ class ArmorySchema(ma.SQLAlchemySchema):
     full_name = auto_field()
 
     policeman = fields.Nested(PolicemanSchema)
+
+class AllTraineeSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Trainee
+        load_instance = True
+
+    id = auto_field()
+    name = auto_field()
+    sername = auto_field()
+    lastname = auto_field()
+    birthday = auto_field()
+
+    curator_fullname = fields.Method('get_curator_fullname')
+
+    
+    def get_curator_fullname(self, obj):
+        if obj.curator:
+            lastname = str(obj.curator.lastname)
+            name = str(obj.curator.name)
+            sername = str(obj.curator.sername)
+
+            output = f"{lastname} {name[0]}. {sername[0]}."
+
+        else:
+            output = ""
+        return output
 
 class TraineeSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -162,6 +215,41 @@ class CriminalSchema(ma.SQLAlchemySchema):
     lastname = auto_field()
     birthday = auto_field()
     status = auto_field()
+
+class AllDetentionSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Detention
+        load_instance = True
+
+    id = auto_field()
+    criminal_fullname = fields.Method("get_criminal_fullname")
+    policeman_fullname = fields.Method("get_policeman_fullname")
+    article = auto_field()
+    date = auto_field()
+
+    def get_policeman_fullname(self, obj):
+        if obj.policeman:
+            lastname = str(obj.policeman.lastname)
+            name = str(obj.policeman.name)
+            sername = str(obj.policeman.sername)
+
+            output = f"{lastname} {name[0]}. {sername[0]}."
+
+        else:
+            output = ""
+        return output
+    
+    def get_criminal_fullname(self, obj):
+        if obj.criminal:
+            lastname = str(obj.criminal.lastname)
+            name = str(obj.criminal.name)
+            sername = str(obj.criminal.sername)
+
+            output = f"{lastname} {name[0]}. {sername[0]}."
+
+        else:
+            output = ""
+        return output
 
 class DetentionSchema(ma.SQLAlchemySchema):
     class Meta:

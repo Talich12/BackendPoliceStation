@@ -1,10 +1,10 @@
 from app import app, db
 from flask import jsonify, request
-from app.models import Armory, ArmorySchema
+from app.models import Armory, ArmorySchema, AllArmorySchema
 
 @app.route('/armory', methods = ['GET'])
 def get_armory():
-    armory_schema = ArmorySchema(many = True)
+    armory_schema = AllArmorySchema(many = True)
 
     req = Armory.query.all()
 

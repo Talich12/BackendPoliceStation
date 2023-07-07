@@ -1,15 +1,16 @@
 from app import app, db
 from flask import jsonify, request
-from app.models import Policeman, PolicemanSchema
+from app.models import Policeman, PolicemanSchema, AllPolicemanSchema
 from datetime import datetime
 
 @app.route('/policeman', methods = ['GET'])
 def get_policeman():
-    policeman_schema = PolicemanSchema(many = True)
+    policeman_schema = AllPolicemanSchema(many = True)
 
     req = Policeman.query.all()
 
     output = policeman_schema.dump(req)
+    print(output)
     return jsonify(output)
 
 @app.route('/policeman', methods = ['POST'])

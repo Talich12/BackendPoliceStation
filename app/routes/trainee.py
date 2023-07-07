@@ -1,11 +1,11 @@
 from app import app, db
 from flask import jsonify, request
-from app.models import Trainee, TraineeSchema
+from app.models import Trainee, TraineeSchema, AllTraineeSchema
 from datetime import datetime
 
 @app.route('/trainee', methods = ['GET'])
 def get_trainee():
-    trainee_schema = TraineeSchema(many = True)
+    trainee_schema = AllTraineeSchema(many = True)
 
     req = Trainee.query.all()
 

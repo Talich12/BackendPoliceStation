@@ -1,11 +1,11 @@
 from app import app, db
 from flask import jsonify, request
-from app.models import Detention, DetentionSchema
+from app.models import Detention, DetentionSchema, AllDetentionSchema
 from datetime import datetime
 
 @app.route('/detention', methods = ['GET'])
 def get_detention():
-    detention_schema = DetentionSchema(many = True)
+    detention_schema = AllDetentionSchema(many = True)
 
     req = Detention.query.all()
 
