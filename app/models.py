@@ -66,7 +66,7 @@ class Criminal(db.Model):
 class Detention(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     criminal_id = db.Column(db.Integer, db.ForeignKey('criminal.id'), nullable=False)
-    car = db.relationship("Criminal", backref="detention")
+    criminal = db.relationship("Criminal", backref="detention")
     policeman_id = db.Column(db.Integer, db.ForeignKey('policeman.id'), nullable=False)
     policeman = db.relationship("Policeman", backref="detention")
     article = db.Column(db.String(), nullable=False)
@@ -88,6 +88,20 @@ class JobSchema(ma.SQLAlchemySchema):
 
     id =auto_field()
     name = auto_field()
+
+
+class AllPolicemanSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Policeman
+        load_instance = True
+
+    id = auto_field()
+    name = auto_field()
+    sername = auto_field()
+    lastname = auto_field()
+    job = fields.String()
+    hire_date = auto_field()
+    birthday = auto_field()
 
 class PolicemanSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -148,3 +162,14 @@ class CriminalSchema(ma.SQLAlchemySchema):
     lastname = auto_field()
     birthday = auto_field()
     status = auto_field()
+
+class DetentionSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Detention
+        load_instance = True
+
+    id = auto_field()
+    criminal = fields.Nested(CriminalSchema)
+    policeman = fields.Nested(PolicemanSchema)
+    article = auto_field()
+    date = auto_field()
