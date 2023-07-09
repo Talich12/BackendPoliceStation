@@ -1,6 +1,6 @@
 from app import app, db
 from flask import jsonify, request
-from app.models import Policeman, PolicemanSchema, AllPolicemanSchema
+from app.models import Policeman, PolicemanSchema, AllPolicemanSchema, Armory, ArmorySchema, CarAccounting, CarAccountingSchema, Detention, Trainee
 from datetime import datetime
 
 @app.route('/policeman', methods = ['GET'])
@@ -10,7 +10,6 @@ def get_policeman():
     req = Policeman.query.all()
 
     output = policeman_schema.dump(req)
-    print(output)
     return jsonify(output)
 
 @app.route('/policeman', methods = ['POST'])
@@ -43,6 +42,29 @@ def get_cur_policeman(id):
     output = policeman_schema.dump(req)
     return jsonify(output)
 
+@app.route('/policeman/<id>/gun', methods = ['GET'])
+def get_cur_policeman_gun(id):
+    armory_schema = ArmorySchema(many = True)
+
+    req = Armory.query.filter_by(policeman_id = id).all()
+
+    output = armory_schema.dump(req)
+
+    output = armory_schema.dump(req)
+    return jsonify(output)
+
+@app.route('/policeman/<id>/auto', methods = ['GET'])
+def get_cur_policeman_auto(id):
+    output = []
+    auto_schema = CarAccountingSchema(many = True)
+
+    req = CarAccounting.query.filter_by(policeman_id = id).all()
+
+    req = auto_schema.dump(req)
+    for item in req:
+        output.append(item['car'])
+
+    return jsonify(output)
 
 @app.route('/policeman/<id>', methods = ['POST'])
 def edit_cur_policeman(id):
@@ -71,6 +93,10 @@ def edit_cur_policeman(id):
 @app.route('/policeman/<id>', methods = ['DELETE'])
 def delete_cur_policeman(id):
     policeman = Policeman.query.filter_by(id = id).first()
+
+    find_cars = CarAccounting.query.filter_by(policeman_id = id).all()
+    for car in find_cars:
+        db.session.delete(car)
 
     db.session.delete(policeman)
     db.session.commit()

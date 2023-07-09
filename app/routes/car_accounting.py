@@ -57,3 +57,12 @@ def delete_cur_car_account(id):
     db.session.commit()
     
     return {"message": "Success"}
+
+@app.route('/car-account/<id>/policeman', methods = ['DELETE'])
+def delete_cur_car_account_by_policeman_id(id):
+    car_account = CarAccounting.query.filter_by(policeman_id = id).first()
+
+    db.session.delete(car_account)
+    db.session.commit()
+    
+    return {"message": "Success"}

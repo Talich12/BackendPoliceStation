@@ -21,7 +21,7 @@ class Armory(db.Model):
     code = db.Column(db.String(), nullable=False)
     full_name = db.Column(db.String(), nullable=False)
 
-    policeman_id = db.Column(db.Integer, db.ForeignKey('policeman.id'), nullable=True)
+    policeman_id = db.Column(db.Integer, db.ForeignKey('policeman.id', ondelete='SET NULL'), nullable=True)
     policeman = db.relationship("Policeman", backref="weapon")
 
 class Job(db.Model):
@@ -44,14 +44,14 @@ class Trainee(db.Model):
     sername = db.Column(db.String(), nullable=False)
     lastname = db.Column(db.String(), nullable=False)
     birthday = db.Column(db.Date(), nullable=False) # ДАТА
-    curator_id = db.Column(db.Integer, db.ForeignKey('policeman.id'), nullable=False)
+    curator_id = db.Column(db.Integer, db.ForeignKey('policeman.id', ondelete='SET NULL'), nullable=True)
     curator = db.relationship("Policeman", backref="trainee")
 
 class CarAccounting(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    car_id = db.Column(db.Integer, db.ForeignKey('auto_park.id'), nullable=False)
+    car_id = db.Column(db.Integer, db.ForeignKey('auto_park.id',  ondelete='CASCADE'), nullable=True)
     car = db.relationship("AutoPark", backref="account")
-    policeman_id = db.Column(db.Integer, db.ForeignKey('policeman.id'), nullable=False)
+    policeman_id = db.Column(db.Integer, db.ForeignKey('policeman.id', ondelete='CASCADE'), nullable=True)
     policeman = db.relationship("Policeman", backref="account")
 
 
@@ -67,7 +67,7 @@ class Detention(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     criminal_id = db.Column(db.Integer, db.ForeignKey('criminal.id'), nullable=False)
     criminal = db.relationship("Criminal", backref="detention")
-    policeman_id = db.Column(db.Integer, db.ForeignKey('policeman.id'), nullable=False)
+    policeman_id = db.Column(db.Integer, db.ForeignKey('policeman.id', ondelete='SET NULL'), nullable=True)
     policeman = db.relationship("Policeman", backref="detention")
     article = db.Column(db.String(), nullable=False)
     date = db.Column(db.Date,  nullable=False) #ДАТА
@@ -103,8 +103,19 @@ class AllPolicemanSchema(ma.SQLAlchemySchema):
     hire_date = auto_field()
     birthday = auto_field()
 
+    inicials = fields.Method("get_policeman_fullname")
+
     def get_job_name(self, obj):
         return obj.job.name if obj.job else ''
+    
+    def get_policeman_fullname(self, obj):
+        lastname = str(obj.lastname)
+        name = str(obj.name)
+        sername = str(obj.sername)
+
+        output = f"{lastname} {name[0]}. {sername[0]}."
+        return output
+
 
 class PolicemanSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -126,7 +137,7 @@ class CarAccountingSchema(ma.SQLAlchemySchema):
 
     id = auto_field()
     car = fields.Nested(AutoParkSchema)
-    policeman = fields.Nested(PolicemanSchema)
+    policeman = fields.Nested(AllPolicemanSchema)
 
 
 class AllArmorySchema(ma.SQLAlchemySchema):
