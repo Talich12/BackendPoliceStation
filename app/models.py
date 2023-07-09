@@ -174,7 +174,7 @@ class ArmorySchema(ma.SQLAlchemySchema):
     code = auto_field()
     full_name = auto_field()
 
-    policeman = fields.Nested(PolicemanSchema)
+    policeman = fields.Nested(AllPolicemanSchema)
 
 class AllTraineeSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -213,7 +213,7 @@ class TraineeSchema(ma.SQLAlchemySchema):
     lastname = auto_field()
     birthday = auto_field()
 
-    curator = fields.Nested(PolicemanSchema)
+    curator = fields.Nested(AllPolicemanSchema)
 
 class CriminalSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -226,6 +226,16 @@ class CriminalSchema(ma.SQLAlchemySchema):
     lastname = auto_field()
     birthday = auto_field()
     status = auto_field()
+
+    inicials = fields.Method('get_inicials')
+
+    def get_inicials(self, obj):
+        lastname = str(obj.lastname)
+        name = str(obj.name)
+        sername = str(obj.sername)
+
+        output = f"{lastname} {name[0]}. {sername[0]}."
+        return output
 
 class AllDetentionSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -269,6 +279,6 @@ class DetentionSchema(ma.SQLAlchemySchema):
 
     id = auto_field()
     criminal = fields.Nested(CriminalSchema)
-    policeman = fields.Nested(PolicemanSchema)
+    policeman = fields.Nested(AllPolicemanSchema)
     article = auto_field()
     date = auto_field()
