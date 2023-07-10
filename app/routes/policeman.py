@@ -12,6 +12,31 @@ def get_policeman():
     output = policeman_schema.dump(req)
     return jsonify(output)
 
+@app.route('/policeman/gun', methods = ['GET'])
+def get_policeman_gun():
+    policeman_schema = PolicemanSchema(many = True)
+
+    subquery = db.session.query(Armory.policeman_id).distinct()
+
+    req = db.session.query(Policeman).filter(Policeman.id.in_(subquery)).all()
+
+
+    output = policeman_schema.dump(req)
+    return jsonify(output)
+
+@app.route('/policeman/gun/not', methods = ['GET'])
+def get_policeman_gun_not():
+    policeman_schema = PolicemanSchema(many = True)
+
+    subquery = db.session.query(Armory.policeman_id).distinct()
+
+    req = Policeman.query.filter(~Policeman.id.in_(subquery)).all()
+
+
+    output = policeman_schema.dump(req)
+    return jsonify(output)
+
+
 @app.route('/policeman', methods = ['POST'])
 def post_policeman():
     data = request.get_json()
