@@ -1,6 +1,6 @@
 from app import app, db
 from flask import jsonify, request
-from app.models import Criminal, CriminalSchema
+from app.models import Criminal, CriminalSchema, Status
 from datetime import datetime
 
 @app.route('/criminal', methods = ['GET'])
@@ -12,6 +12,24 @@ def get_criminal():
     output = criminal_schema.dump(req)
     return jsonify(output)
 
+@app.route('/criminal/free', methods = ['GET'])
+def get_criminal_free():
+    criminal_schema = CriminalSchema(many = True)
+
+    req = Criminal.query.join(Status).filter(Status.status == "Свободен").all()
+
+    output = criminal_schema.dump(req)
+    return jsonify(output)
+
+@app.route('/criminal/free/not', methods = ['GET'])
+def get_criminal_free_not():
+    criminal_schema = CriminalSchema(many = True)
+
+    req = Criminal.query.join(Status).filter(Status.status != "Свободен").all()
+
+    output = criminal_schema.dump(req)
+    return jsonify(output)
+
 @app.route('/criminal', methods = ['POST'])
 def post_criminal():
     data = request.get_json()
@@ -19,11 +37,11 @@ def post_criminal():
     sername = data['sername']
     lastname = data['lastname']
     birthday = data['birthday']
-    status = data['status']
+    status_id = data['status_id']
 
     birthday = datetime.strptime(birthday, '%Y-%m-%d').date()
 
-    criminal = Criminal(name = name, sername = sername, lastname = lastname, birthday = birthday, status = status)
+    criminal = Criminal(name = name, sername = sername, lastname = lastname, birthday = birthday, status_id = status_id)
     db.session.add(criminal)
     db.session.commit()
 
@@ -46,7 +64,7 @@ def edit_cur_criminal(id):
     sername = data['sername']
     lastname = data['lastname']
     birthday = data['birthday']
-    status = data['status']
+    status_id = data['status_id']
 
     birthday = datetime.strptime(birthday, '%Y-%m-%d').date()
 
@@ -55,7 +73,7 @@ def edit_cur_criminal(id):
     criminal.sername = sername
     criminal.lastname = lastname
     criminal.birthday = birthday
-    criminal.status = status
+    criminal.status_id = status_id
     db.session.commit()
 
     return {"message": "Success"}

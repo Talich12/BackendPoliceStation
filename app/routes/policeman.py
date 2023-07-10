@@ -28,7 +28,7 @@ def get_policeman_gun():
 def get_policeman_gun_not():
     policeman_schema = PolicemanSchema(many = True)
 
-    subquery = db.session.query(Armory.policeman_id).distinct()
+    subquery = db.session.query(Armory.policeman_id).filter(Armory.policeman_id.isnot(None)).distinct()
 
     req = Policeman.query.filter(~Policeman.id.in_(subquery)).all()
 
@@ -36,6 +36,17 @@ def get_policeman_gun_not():
     output = policeman_schema.dump(req)
     return jsonify(output)
 
+@app.route('/policeman/trainee', methods = ['GET'])
+def get_policeman_trainee():
+    policeman_schema = PolicemanSchema(many = True)
+
+    subquery = db.session.query(Trainee.curator_id).distinct()
+
+    req = db.session.query(Policeman).filter(Policeman.id.in_(subquery)).all()
+
+
+    output = policeman_schema.dump(req)
+    return jsonify(output)
 
 @app.route('/policeman', methods = ['POST'])
 def post_policeman():

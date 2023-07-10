@@ -28,12 +28,16 @@ class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(), nullable=False)
 
+class Status(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    status = db.Column(db.String(), nullable=False)
+
 class Policeman(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(), nullable=False)
     sername = db.Column(db.String(), nullable=False)
     lastname = db.Column(db.String(), nullable=False)
-    job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=False)
+    job_id = db.Column(db.Integer, db.ForeignKey('job.id', ondelete='SET NULL'), nullable=True)
     job = db.relationship("Job", backref="policeman")
     hire_date = db.Column(db.Date(), nullable=False) #ДАТА
     birthday = db.Column(db.Date(), nullable=False) #ДАТА
@@ -61,7 +65,8 @@ class Criminal(db.Model):
     sername = db.Column(db.String(), nullable=False)
     lastname = db.Column(db.String(), nullable=False)
     birthday = db.Column(db.Date(), nullable=False) #ДАТА
-    status = db.Column(db.String(), nullable=False)
+    status_id = db.Column(db.Integer, db.ForeignKey('status.id', ondelete='SET NULL'), nullable=True)
+    status = db.relationship("Status", backref="criminal")
 
 class Detention(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -89,6 +94,13 @@ class JobSchema(ma.SQLAlchemySchema):
     id =auto_field()
     name = auto_field()
 
+class StatusSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Status
+        load_instance = True
+
+    id =auto_field()
+    status = auto_field()
 
 class AllPolicemanSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -127,6 +139,7 @@ class PolicemanSchema(ma.SQLAlchemySchema):
     sername = auto_field()
     lastname = auto_field()
     job = fields.Nested(JobSchema)
+    job_id = auto_field()
     hire_date = auto_field()
     birthday = auto_field()
 
@@ -173,6 +186,7 @@ class ArmorySchema(ma.SQLAlchemySchema):
     weapon_type = auto_field()
     code = auto_field()
     full_name = auto_field()
+    policeman_id = auto_field()
 
     policeman = fields.Nested(AllPolicemanSchema)
 
@@ -212,6 +226,7 @@ class TraineeSchema(ma.SQLAlchemySchema):
     sername = auto_field()
     lastname = auto_field()
     birthday = auto_field()
+    curator_id = auto_field()
 
     curator = fields.Nested(AllPolicemanSchema)
 
@@ -225,7 +240,8 @@ class CriminalSchema(ma.SQLAlchemySchema):
     sername = auto_field()
     lastname = auto_field()
     birthday = auto_field()
-    status = auto_field()
+    status = fields.Nested(StatusSchema)
+    status_id = auto_field()
 
     inicials = fields.Method('get_inicials')
 
@@ -282,3 +298,4 @@ class DetentionSchema(ma.SQLAlchemySchema):
     policeman = fields.Nested(AllPolicemanSchema)
     article = auto_field()
     date = auto_field()
+
