@@ -1,6 +1,6 @@
 from app import app, db
 from flask import jsonify, request
-from app.models import Policeman, PolicemanSchema, AllPolicemanSchema, Armory, ArmorySchema, CarAccounting, CarAccountingSchema, Detention, Trainee
+from app.models import Policeman, PolicemanSchema, AllPolicemanSchema, Armory, ArmorySchema, CarAccounting, CarAccountingSchema, Detention, Trainee, ArmoryAccounting, ArmoryAccrountingSchema
 from datetime import datetime
 
 @app.route('/policeman', methods = ['GET'])
@@ -16,7 +16,7 @@ def get_policeman():
 def get_policeman_gun():
     policeman_schema = PolicemanSchema(many = True)
 
-    subquery = db.session.query(Armory.policeman_id).distinct()
+    subquery = db.session.query(ArmoryAccounting.policeman_id).distinct()
 
     req = db.session.query(Policeman).filter(Policeman.id.in_(subquery)).all()
 
@@ -28,7 +28,7 @@ def get_policeman_gun():
 def get_policeman_gun_not():
     policeman_schema = PolicemanSchema(many = True)
 
-    subquery = db.session.query(Armory.policeman_id).filter(Armory.policeman_id.isnot(None)).distinct()
+    subquery = db.session.query(ArmoryAccounting.policeman_id).filter(ArmoryAccounting.policeman_id.isnot(None)).distinct()
 
     req = Policeman.query.filter(~Policeman.id.in_(subquery)).all()
 
@@ -80,11 +80,9 @@ def get_cur_policeman(id):
 
 @app.route('/policeman/<id>/gun', methods = ['GET'])
 def get_cur_policeman_gun(id):
-    armory_schema = ArmorySchema(many = True)
+    armory_schema = ArmoryAccrountingSchema(many = True)
 
-    req = Armory.query.filter_by(policeman_id = id).all()
-
-    output = armory_schema.dump(req)
+    req = ArmoryAccounting.query.filter_by(policeman_id = id).all()
 
     output = armory_schema.dump(req)
     return jsonify(output)

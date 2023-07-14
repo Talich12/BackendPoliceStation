@@ -8,7 +8,15 @@ import base64
 from datetime import datetime, timedelta
 import os
 
-  
+class Appeal(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String(), nullable=False)
+    sername = db.Column(db.String(), nullable=False)
+    lastname = db.Column(db.String(), nullable=False)
+    adress = db.Column(db.String(), nullable=False)
+    birthday = db.Column(db.Date(), nullable=False) # ДАТА
+    report = db.Column(db.String(), nullable=False)
+    date = db.Column(db.Date(), nullable=False) #ДАТА
 
 class AutoPark(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -21,8 +29,12 @@ class Armory(db.Model):
     code = db.Column(db.String(), nullable=False)
     full_name = db.Column(db.String(), nullable=False)
 
-    policeman_id = db.Column(db.Integer, db.ForeignKey('policeman.id', ondelete='SET NULL'), nullable=True)
-    policeman = db.relationship("Policeman", backref="weapon")
+class ArmoryAccounting(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    policeman_id = db.Column(db.Integer, db.ForeignKey('policeman.id', ondelete='CASCADE'), nullable=True)
+    policeman = db.relationship("Policeman", backref="armory_accounting")
+    weapon_id = db.Column(db.Integer, db.ForeignKey('armory.id', ondelete='CASCADE'), nullable=True)
+    weapon = db.relationship("Armory", backref="armory_accounting")
 
 class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -75,6 +87,7 @@ class Detention(db.Model):
     policeman_id = db.Column(db.Integer, db.ForeignKey('policeman.id', ondelete='SET NULL'), nullable=True)
     policeman = db.relationship("Policeman", backref="detention")
     article = db.Column(db.String(), nullable=False)
+    report = db.Column(db.String(), nullable=False)
     date = db.Column(db.Date,  nullable=False) #ДАТА
 
 class AutoParkSchema(ma.SQLAlchemySchema):
@@ -163,19 +176,15 @@ class AllArmorySchema(ma.SQLAlchemySchema):
     code = auto_field()
     full_name = auto_field()
 
-    policeman_fullname = fields.Method('get_policeman_fullname')
+    status = fields.Method("get_status")
 
-    def get_policeman_fullname(self, obj):
-        if obj.policeman:
-            lastname = str(obj.policeman.lastname)
-            name = str(obj.policeman.name)
-            sername = str(obj.policeman.sername)
+    def get_status(self, obj):
+        find = ArmoryAccounting.query.filter_by(weapon_id = obj.id).first()
 
-            output = f"{lastname} {name[0]}. {sername[0]}."
-
+        if find is None:
+            return "На складе"
         else:
-            output = ""
-        return output
+            return "На руках"
     
 class ArmorySchema(ma.SQLAlchemySchema):
     class Meta:
@@ -186,9 +195,15 @@ class ArmorySchema(ma.SQLAlchemySchema):
     weapon_type = auto_field()
     code = auto_field()
     full_name = auto_field()
-    policeman_id = auto_field()
+    status = fields.Method("get_status")
 
-    policeman = fields.Nested(AllPolicemanSchema)
+    def get_status(self, obj):
+        find = ArmoryAccounting.query.filter_by(weapon_id = obj.id).first()
+
+        if find is None:
+            return "На складе"
+        else:
+            return "На руках"
 
 class AllTraineeSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -262,6 +277,7 @@ class AllDetentionSchema(ma.SQLAlchemySchema):
     criminal_fullname = fields.Method("get_criminal_fullname")
     policeman_fullname = fields.Method("get_policeman_fullname")
     article = auto_field()
+    report = auto_field()
     date = auto_field()
 
     def get_policeman_fullname(self, obj):
@@ -298,4 +314,27 @@ class DetentionSchema(ma.SQLAlchemySchema):
     policeman = fields.Nested(AllPolicemanSchema)
     article = auto_field()
     date = auto_field()
+    report = auto_field()
 
+class ArmoryAccrountingSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = CarAccounting
+        load_instance = True
+
+    id = auto_field()
+    policeman = fields.Nested(AllPolicemanSchema)
+    weapon = fields.Nested(AllArmorySchema)
+
+class AppealSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Appeal
+        load_instance = True
+
+    id = auto_field()
+    name = auto_field()
+    sername = auto_field()
+    lastname = auto_field()
+    adress = auto_field()
+    birthday = auto_field()
+    report = auto_field()
+    date = auto_field()

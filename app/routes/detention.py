@@ -18,11 +18,12 @@ def post_detention():
     policeman_id = data['policeman_id']
     criminal_id = data['criminal_id']
     article = data['article']
+    report = data['report']
     date = data['date']
 
     date = datetime.strptime(date, '%Y-%m-%d').date()
 
-    detention = Detention(policeman_id = policeman_id, criminal_id = criminal_id, article = article, date = date)
+    detention = Detention(policeman_id = policeman_id, criminal_id = criminal_id, article = article, date = date, report = report)
     db.session.add(detention)
     db.session.commit()
 
